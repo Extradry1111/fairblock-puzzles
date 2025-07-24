@@ -18,4 +18,18 @@ body {
     background-size: 450px 450px;
     cursor: pointer;
   }
+  .gallery img {
+    width: 300px; /* было 150px */
+    height: 300px;
+    object-fit: cover;
+    margin: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .gallery img:hover {
+    transform: scale(1.05);
+  }
+  
   
