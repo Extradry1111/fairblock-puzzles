@@ -67,7 +67,7 @@
       font-size: 18px;
       margin: 10px 0;
     }
-    #start-btn, #back-btn {
+    #start-btn, #back-btn, #menu-btn, #leaderboard-btn {
       padding: 10px 20px;
       font-size: 16px;
       margin: 5px;
@@ -78,6 +78,22 @@
       font-size: 1.5em;
       color: green;
     }
+    #leaderboard {
+      margin-top: 30px;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 300px;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 8px;
+    }
+    th {
+      background-color: #0288d1;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -85,13 +101,14 @@
     <h1>FairBlock Puzzle</h1>
     <h2>Choose your picture to solve</h2>
     <div id="gallery" class="gallery">
-      <img src="images/1.jpg" alt="" data-title="">
-      <img src="images/2.jpg" alt="" data-title="">
-      <img src="images/3.jpg" alt="" data-title="">
-      <img src="images/4.jpg" alt="" data-title="">
-      <img src="images/5.jpg" alt="" data-title="">
-      <img src="images/6.jpg" alt="" data-title="">
+      <img src="images/1.jpg" alt="">
+      <img src="images/2.jpg" alt="">
+      <img src="images/3.jpg" alt="">
+      <img src="images/4.jpg" alt="">
+      <img src="images/5.jpg" alt="">
+      <img src="images/6.jpg" alt="">
     </div>
+    <button id="leaderboard-btn">Leaderboard</button>
   </div>
 
   <div id="game" class="hidden">
@@ -100,19 +117,38 @@
     <div id="puzzle"></div>
     <button id="start-btn">Start</button>
     <button id="back-btn">Back to Menu</button>
-    <div id="win-message" class="hidden">Congratulations! You solved the puzzle 🎉</div>
+    <div id="win-message" class="hidden">
+      Congratulations! You solved the puzzle 🎉<br><br>
+      <input type="text" id="player-name" placeholder="Enter your name" />
+      <button onclick="submitScore()">Submit Score</button>
+    </div>
+  </div>
+
+  <div id="leaderboard" class="hidden">
+    <h2>Leaderboard</h2>
+    <table>
+      <thead>
+        <tr><th>Player</th><th>Time (s)</th></tr>
+      </thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+    <button id="menu-btn">Back to Menu</button>
   </div>
 
   <script>
     const puzzle = document.getElementById('puzzle');
     const startBtn = document.getElementById('start-btn');
     const backBtn = document.getElementById('back-btn');
+    const menuBtn = document.getElementById('menu-btn');
+    const leaderboardBtn = document.getElementById('leaderboard-btn');
+    const leaderboardBody = document.getElementById('leaderboard-body');
     const timerEl = document.getElementById('timer');
     const winMessage = document.getElementById('win-message');
     const game = document.getElementById('game');
     const menu = document.getElementById('menu');
     const gallery = document.getElementById('gallery');
     const title = document.getElementById('puzzle-title');
+    const leaderboard = document.getElementById('leaderboard');
 
     let currentImage = '';
     let board = [];
@@ -205,6 +241,30 @@
       return true;
     }
 
+    function submitScore() {
+      const name = document.getElementById('player-name').value || 'Anonymous';
+      const row = document.createElement('tr');
+      const nameCell = document.createElement('td');
+      const timeCell = document.createElement('td');
+      nameCell.textContent = name;
+      timeCell.textContent = timer;
+      row.appendChild(nameCell);
+      row.appendChild(timeCell);
+      leaderboardBody.appendChild(row);
+      sortLeaderboard();
+    }
+
+    function sortLeaderboard() {
+      const rows = Array.from(leaderboardBody.querySelectorAll('tr'));
+      rows.sort((a, b) => {
+        const t1 = parseInt(a.children[1].textContent);
+        const t2 = parseInt(b.children[1].textContent);
+        return t1 - t2;
+      });
+      leaderboardBody.innerHTML = '';
+      rows.forEach(row => leaderboardBody.appendChild(row));
+    }
+
     gallery.querySelectorAll('img').forEach(img => {
       img.addEventListener('click', () => {
         currentImage = img.src;
@@ -224,6 +284,16 @@
       timerEl.textContent = 'Time: 0s';
       winMessage.classList.add('hidden');
       playing = false;
+    });
+
+    leaderboardBtn.addEventListener('click', () => {
+      menu.classList.add('hidden');
+      leaderboard.classList.remove('hidden');
+    });
+
+    menuBtn.addEventListener('click', () => {
+      leaderboard.classList.add('hidden');
+      menu.classList.remove('hidden');
     });
   </script>
 </body>
